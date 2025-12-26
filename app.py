@@ -2,8 +2,15 @@ import streamlit as st
 import preprocessor,helper
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
-st.sidebar.title("Whatsapp Chat Analyzer")
+st.sidebar.title("Whatsapp Chat Analyzer By")
+
+# Show user image and name in the sidebar (file must be present in project root or a valid path)
+img_path = "149376784.jpg"
+if os.path.exists(img_path):
+    st.sidebar.image(img_path, width=120)
+st.sidebar.markdown("### Samarth gour")
 
 uploaded_file = st.sidebar.file_uploader("Choose a file")
 if uploaded_file is not None:
@@ -24,36 +31,40 @@ if uploaded_file is not None:
         # Stats Area
         num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user,df)
         st.title("Top Statistics")
+
+        # Display key stats in four compact metric cards
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.header("Total Messages")
-            st.title(num_messages)
+            st.metric(label="Total Messages", value=num_messages)
         with col2:
-            st.header("Total Words")
-            st.title(words)
+            st.metric(label="Total Words", value=words)
         with col3:
-            st.header("Media Shared")
-            st.title(num_media_messages)
+            st.metric(label="Media Shared", value=num_media_messages)
         with col4:
-            st.header("Links Shared")
-            st.title(num_links)
+            st.metric(label="Links Shared", value=num_links)
 
-        # monthly timeline
-        st.title("Monthly Timeline")
-        timeline = helper.monthly_timeline(selected_user,df)
-        fig,ax = plt.subplots()
-        ax.plot(timeline['time'], timeline['message'],color='green')
-        plt.xticks(rotation='vertical')
-        st.pyplot(fig)
+        col1, col2 = st.columns(2)
 
-        # daily timeline
-        st.title("Daily Timeline")
-        daily_timeline = helper.daily_timeline(selected_user, df)
-        fig, ax = plt.subplots()
-        ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='black')
-        plt.xticks(rotation='vertical')
-        st.pyplot(fig)
+        with col1:
+            st.subheader("Monthly Timeline 📈")
+            timeline = helper.monthly_timeline(selected_user, df)
+            fig, ax = plt.subplots(figsize=(6, 3))
+            ax.plot(timeline['time'], timeline['message'], color='green', marker='o', linewidth=1.5)
+            ax.set_ylabel('Messages')
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        with col2:
+            st.subheader("Daily Timeline 🗓️")
+            daily_timeline = helper.daily_timeline(selected_user, df)
+            fig, ax = plt.subplots(figsize=(6, 3))
+            ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='black', marker='o', linewidth=1.5)
+            ax.set_ylabel('Messages')
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig)
 
         # activity map
         st.title('Activity Map')
