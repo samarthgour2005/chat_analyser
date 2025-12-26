@@ -7,9 +7,9 @@ import os
 st.sidebar.title("Chat Analyzer By")
 
 # Show user image and name in the sidebar (file must be present in project root or a valid path)
-img_path = "149376784.jpg"
-if os.path.exists(img_path):
-    st.sidebar.image(img_path, width=120)
+# img_path = "149376784.jpg"
+# if os.path.exists(img_path):
+#     st.sidebar.image(img_path, width=120)
 st.sidebar.markdown("### Samarth gour")
 
 uploaded_file = st.sidebar.file_uploader("Choose a file")
