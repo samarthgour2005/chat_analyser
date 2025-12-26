@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-st.sidebar.title("Whatsapp Chat Analyzer By")
+st.sidebar.title("Chat Analyzer By")
 
 # Show user image and name in the sidebar (file must be present in project root or a valid path)
 img_path = "149376784.jpg"
