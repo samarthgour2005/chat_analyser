@@ -1,5 +1,5 @@
 from urlextract import URLExtract
-from wordcloud import WordCloud
+# from wordcloud import WordCloud
 import pandas as pd
 from collections import Counter
 import emoji
@@ -35,29 +35,6 @@ def most_busy_users(df):
         columns={'index': 'name', 'user': 'percent'})
     return x,df
 
-def create_wordcloud(selected_user,df):
-
-    f = open('stop_hinglish.txt', 'r')
-    stop_words = f.read()
-
-    if selected_user != 'Overall':
-        df = df[df['user'] == selected_user]
-
-    temp = df[df['user'] != 'group_notification']
-    temp = temp[temp['message'] != '<Media omitted>\n']
-
-    def remove_stop_words(message):
-        y = []
-        for word in message.lower().split():
-            if word not in stop_words:
-                y.append(word)
-        return " ".join(y)
-
-    wc = WordCloud(width=500,height=500,min_font_size=10,background_color='white')
-    temp['message'] = temp['message'].apply(remove_stop_words)
-    df_wc = wc.generate(temp['message'].str.cat(sep=" "))
-    return df_wc
-
 def most_common_words(selected_user,df):
 
     f = open('stop_hinglish.txt','r')
@@ -85,7 +62,13 @@ def emoji_helper(selected_user,df):
 
     emojis = []
     for message in df['message']:
-        emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI['en']])
+        # Prefer using emoji.emoji_list (available in emoji v2+). Fallback to older checks.
+        if hasattr(emoji, 'emoji_list'):
+            emojis.extend([e['emoji'] for e in emoji.emoji_list(message)])
+        elif hasattr(emoji, 'EMOJI_DATA'):
+            emojis.extend([c for c in message if c in emoji.EMOJI_DATA])
+        else:
+            emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI.get('en', {})])
 
     emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
 
